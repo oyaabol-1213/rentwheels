@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
+    // Admin panel dashboard data and booking/fleet/account management actions.
     public function dashboard()
     {
         $vehicles = Vehicle::orderBy('id')->get(Vehicle::listingColumns());
@@ -40,6 +41,7 @@ class AdminController extends Controller
         ]);
     }
 
+    // Change vehicle booking status while checking overlaps before confirmation.
     public function updateVehicleBookingStatus(Request $request, VehicleBooking $booking)
     {
         $data = $request->validate([
@@ -82,6 +84,7 @@ class AdminController extends Controller
         });
     }
 
+    // Change Tour Van booking status while preventing duplicate-date confirmation.
     public function updateTourBookingStatus(Request $request, TourBooking $booking)
     {
         $data = $request->validate([
@@ -111,6 +114,7 @@ class AdminController extends Controller
         });
     }
 
+    // Super-admin account and fleet-management actions.
     public function storeAdmin(Request $request)
     {
         $data = $request->validate([
@@ -132,6 +136,7 @@ class AdminController extends Controller
         return response()->json(['message' => 'Admin account created successfully.'], 201);
     }
 
+    // Add a fleet record and optionally save its photo for the public catalog.
     public function storeVehicle(Request $request)
     {
         $data = $request->validate([
@@ -180,6 +185,7 @@ class AdminController extends Controller
         return response()->json(['message' => 'Vehicle added successfully.'], 201);
     }
 
+    // Update vehicle availability for the public fleet and booking forms.
     public function updateVehicleStatus(Request $request, Vehicle $vehicle)
     {
         $data = $request->validate([
@@ -192,6 +198,7 @@ class AdminController extends Controller
         return response()->json(['message' => $vehicle->name . ' is now marked as ' . $data['status'] . '.']);
     }
 
+    // Remove a fleet record and its uploaded photo.
     public function destroyVehicle(Vehicle $vehicle)
     {
         // Remove the uploaded photo too, so the folder does not fill up with unused files.

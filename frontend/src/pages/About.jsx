@@ -16,6 +16,7 @@ const TEAM = [
   { name: "Other Two", image: "man.jpg" },
 ];
 
+// Public About page: service descriptions, company information, and team.
 export default function About() {
   useDocumentTitle("About Us | RentWheels");
 

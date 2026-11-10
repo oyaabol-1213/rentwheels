@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    // Session restoration and customer/admin authentication endpoints.
     public function me()
     {
         $account = Accounts::current();
@@ -51,6 +52,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Email not found'], 422);
     }
 
+    // Create a customer account and sign the new user in.
     public function signup(Request $request)
     {
         $data = $request->validate([
@@ -77,6 +79,7 @@ class AuthController extends Controller
         return response()->json(['user' => Accounts::payload($user)], 201);
     }
 
+    // Clear both account guards and invalidate the current session.
     public function logout(Request $request)
     {
         $this->signOutEverywhere();

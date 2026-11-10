@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Accounts
 {
+    // Shared customer/admin identity lookup and serialized account data for the React app.
     /** The signed-in account: an admin (guard "admin") or a customer (guard "web"). */
     public static function current(): ?Authenticatable
     {

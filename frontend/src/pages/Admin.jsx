@@ -51,6 +51,7 @@ function BookingStatus({ value, onChange }) {
   );
 }
 
+// Admin panel: dashboard data, booking management, fleet management, and accounts.
 export default function Admin() {
   useDocumentTitle("Admin Panel | RentWheels");
   const { user, loading, isAdmin, isSuperAdmin, logout } = useAuth();
@@ -160,7 +161,7 @@ export default function Admin() {
       <header className="bg-slate-950 text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <Link className="flex items-center gap-3" to="/">
-            <img className="h-11 w-11 object-contain" src="/needs/carIcon-removebg-preview.png" alt="RentWheels logo" />
+            <img className="h-11 w-11 object-contain brightness-0 invert" src="/needs/carIcon-removebg-preview.png" alt="RentWheels logo" />
             <span><strong className="block font-bold">RentWheels Admin</strong><small className="text-xs text-slate-400">{isSuperAdmin ? "Super Admin dashboard" : "Admin dashboard"}</small></span>
           </Link>
           <div className="flex items-center gap-4 text-sm"><span className="hidden text-slate-300 sm:inline">Signed in as {user.name}</span><Link className="hover:text-orange-300" to="/profile">Profile</Link><button type="button" className="font-semibold text-orange-300 hover:text-orange-200" onClick={logoutAdmin}>Log out</button></div>
@@ -170,6 +171,7 @@ export default function Admin() {
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
         {notice && <div role="status" className={`rw-pop rounded-xl border px-4 py-3 text-sm ${notice.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-rose-200 bg-rose-50 text-rose-800"}`}>{notice.text}</div>}
 
+        {/* Dashboard summary counts. */}
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {[
             ["Total users", stats?.users],
@@ -181,6 +183,7 @@ export default function Admin() {
           ))}
         </section>
 
+        {/* Super-admin account creation and vehicle entry forms. */}
         <section className="grid gap-5 lg:grid-cols-2">
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-lg font-bold text-slate-950">Create admin account</h2>
@@ -234,6 +237,7 @@ export default function Admin() {
           </section>
         </section>
 
+        {/* Fleet list and super-admin vehicle availability/delete actions. */}
         <Table title="Vehicles" headers={["Photo", "Name", "Type", "Category", "Rate", "Status", ...(isSuperAdmin ? ["Actions"] : [])]}>
           {data?.vehicles.map((vehicle) => (
             <tr key={vehicle.id} className="transition-colors hover:bg-orange-50/40">
@@ -268,18 +272,21 @@ export default function Admin() {
           ))}
         </Table>
 
+        {/* Vehicle and Tour Van reservation lists, including status updates. */}
         <Table title="Vehicle bookings" headers={["Customer", "Email", "Phone", "License no.", "Vehicle", "Rate", "Pick-up", "Pick-up time", "Pick-up location", "Return", "Days", "Add-ons", "Total", "Notes", "Status"]}>
           {data?.vehicle_bookings.map((booking) => (
             <tr key={booking.id} className="transition-colors hover:bg-orange-50/40"><Cell>{booking.customer_name}</Cell><Cell>{dash(booking.email)}</Cell><Cell>{dash(booking.phone)}</Cell><Cell>{dash(booking.license_number)}</Cell><Cell>{booking.vehicle_name}</Cell><Cell>{booking.vehicle_price}</Cell><Cell>{booking.pickup_date?.slice(0, 10)}</Cell><Cell>{dash(booking.pickup_time)}</Cell><Cell className="max-w-xs whitespace-normal">{dash(booking.pickup_location)}</Cell><Cell>{booking.return_date?.slice(0, 10)}</Cell><Cell>{booking.rental_days}</Cell><Cell>{booking.addon_total ?? "Php 0.00"}</Cell><Cell>{booking.total_price}</Cell><Cell className="max-w-xs whitespace-normal">{dash(booking.notes)}</Cell><Cell><BookingStatus value={booking.status} onChange={(status) => updateBookingStatus("vehicle", booking.id, status)} /></Cell></tr>
           ))}
         </Table>
 
+        {/* Tour Van booking table. */}
         <Table title="Tour van bookings" headers={["Name", "Email", "Phone", "Tour date", "Guests", "Route", "Pick-up time", "Pick-up location", "Emergency contact", "Add-ons", "Total", "Notes", "Status"]}>
           {data?.tour_bookings.map((booking) => (
             <tr key={booking.id} className="transition-colors hover:bg-orange-50/40"><Cell>{booking.full_name}</Cell><Cell>{dash(booking.email)}</Cell><Cell>{booking.phone}</Cell><Cell>{booking.tour_date?.slice(0, 10)}</Cell><Cell>{booking.guests}</Cell><Cell>{booking.route_name}</Cell><Cell>{dash(booking.pickup_time)}</Cell><Cell className="max-w-xs whitespace-normal">{dash(booking.pickup_location)}</Cell><Cell>{booking.emergency_contact ? `${booking.emergency_contact} (${dash(booking.emergency_phone)})` : "—"}</Cell><Cell>{(booking.add_ons || []).map((addon) => `${addon.label} × ${addon.quantity}`).join(", ") || "—"}</Cell><Cell>{booking.total_price || "—"}</Cell><Cell className="max-w-xs whitespace-normal">{dash(booking.notes)}</Cell><Cell><BookingStatus value={booking.status} onChange={(status) => updateBookingStatus("tour", booking.id, status)} /></Cell></tr>
           ))}
         </Table>
 
+        {/* Customer/admin account directory and submitted reviews. */}
         <Table title="User information" headers={["ID", "Name", "Email", "Phone", "Joined"]}>
           {data?.users.map((customer) => <tr key={customer.id}><Cell>{customer.id}</Cell><Cell>{customer.name}</Cell><Cell>{customer.email}</Cell><Cell>{dash(customer.phone)}</Cell><Cell>{customer.created_at}</Cell></tr>)}
         </Table>

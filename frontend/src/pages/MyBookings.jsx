@@ -32,6 +32,7 @@ function formatDate(value) {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
+// Customer booking history with status display and pending-booking cancellation.
 export default function MyBookings() {
   const navigate = useNavigate();
   const { user, loading, logout } = useAuth();
@@ -117,6 +118,7 @@ export default function MyBookings() {
           <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">Loading bookings…</div>
         ) : (
           <>
+            {/* Vehicle reservation history and cancellation controls. */}
             <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-slate-900">Vehicle bookings</h2>
@@ -174,6 +176,7 @@ export default function MyBookings() {
               )}
             </section>
 
+            {/* Tour reservation history and cancellation controls. */}
             <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-slate-900">Tour bookings</h2>

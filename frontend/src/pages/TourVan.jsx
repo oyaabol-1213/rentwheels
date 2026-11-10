@@ -35,6 +35,7 @@ function futureISO() {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
+// Tour Van route browser, pricing/add-ons, and customer reservation form.
 export default function TourVan() {
   useDocumentTitle("Bicol Tourist Van | RentWheels");
   const { user, isAdmin } = useAuth();
@@ -191,6 +192,7 @@ export default function TourVan() {
     <>
       <NavBar />
       <main className="bg-gradient-to-b from-orange-50 via-white to-slate-50">
+        {/* Tour overview and reservation form, including calendar and optional add-ons. */}
         <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-16">
           <div className="flex flex-col justify-center">
             <span className="w-fit rounded-full border border-orange-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-orange-700">Explore Bicol with RentWheels</span>
@@ -310,6 +312,7 @@ export default function TourVan() {
           </section>
         </section>
 
+        {/* Route board: filter tour packages and choose one for the form. */}
         <section id="routes" className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div><p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-600">Local route ideas</p><h2 className="mt-1 text-3xl font-bold text-slate-950">Bicol route board</h2></div>

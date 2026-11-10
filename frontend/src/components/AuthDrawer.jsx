@@ -5,20 +5,37 @@ import { useAuth } from "../AuthContext.jsx";
 import { errorMessage } from "../api.js";
 
 const EMPTY_SIGNUP = { name: "", phone: "", email: "", password: "", confirm: "" };
-const SLIDE_MS = 500; // must match the duration-500 classes below
+const SLIDE_MS = 500; // must match the animation time in app.css (.rw-card-* and .rw-overlay-*)
 
+// Each card is always in one of these states. app.css has an animation for each one:
+//   hidden - waiting off-screen on the right (a closed drawer)
+//   enter  - slides in from the right and sits on top
+//   exit   - slides back out to the right (the drawer closes)
+// The card that is entering always gets the higher z-index, so it slides over the leaving one.
+const CARD_CLASS = {
+  hidden: "rw-card-hidden z-10",
+  enter: "rw-card-enter is-active z-20",
+  exit: "rw-card-exit z-10",
+};
+const isOnTop = (state) => state === "enter";
+
+// Login/sign-up drawer state, panel switching, form submission, and dismissal.
 // The login and sign-up panels are two "cards" stacked on the right side of the screen.
 // - Opening: the card slides in from the right (hidden) to the left (visible).
-// - Switching: the other card slides over the top, like shuffling a deck of cards.
+// - Switching: the card that is open closes like a drawer (slides back to the right) while the
+//   other card slides in, like shuffling a deck of cards.
 // - Closing (click the blurred page or press Esc): the cards slide back to the right.
+//
+// The slides use CSS keyframe animations. They start the moment a card gets its class, so they
+// do not depend on the browser having painted a "before" frame first (that is what made
+// the first version unreliable).
 export default function AuthDrawer() {
   const { drawer, openLogin, openSignup, closeDrawer, login, signup } = useAuth();
   const navigate = useNavigate();
 
   const [mounted, setMounted] = useState(false); // is the drawer in the page at all?
-  const [open, setOpen] = useState(false); // are the cards slid into view?
-  const [lastPanel, setLastPanel] = useState("login"); // remembered so the card can slide out while closing
-  const [loginWasShown, setLoginWasShown] = useState(false); // true only if the login card was on screen before sign-up
+  const [cards, setCards] = useState({ login: "hidden", signup: "hidden" });
+  const [lastPanel, setLastPanel] = useState("login"); // remembered so the right card stays on screen while closing
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
@@ -29,26 +46,28 @@ export default function AuthDrawer() {
   const current = drawer || lastPanel; // the card that should be on top
   const isSignup = current === "signup";
 
-  // Slide in when the drawer opens, slide out (then remove it) when it closes.
+  // Decide what every card should do whenever the drawer opens, switches or closes.
   useEffect(() => {
     if (drawer) {
       setLastPanel(drawer);
-      if (drawer === "login") setLoginWasShown(true);
       setMounted(true);
-      // Wait two frames so the browser first paints the hidden position, otherwise there is no slide.
-      let second;
-      const first = requestAnimationFrame(() => {
-        second = requestAnimationFrame(() => setOpen(true));
-      });
-      return () => {
-        cancelAnimationFrame(first);
-        cancelAnimationFrame(second);
-      };
+      setCards((c) => ({
+        // the card we are switching TO slides in; the other one (if it was open) closes
+        login: drawer === "login" ? "enter" : isOnTop(c.login) ? "exit" : c.login,
+        signup: drawer === "signup" ? "enter" : isOnTop(c.signup) ? "exit" : c.signup,
+      }));
+      return undefined;
     }
 
-    setOpen(false);
-    setLoginWasShown(false);
-    const timer = setTimeout(() => setMounted(false), SLIDE_MS);
+    // Closing: everything that is on screen slides out to the right, then the drawer is removed.
+    setCards((c) => ({
+      login: isOnTop(c.login) ? "exit" : c.login,
+      signup: isOnTop(c.signup) ? "exit" : c.signup,
+    }));
+    const timer = setTimeout(() => {
+      setMounted(false);
+      setCards({ login: "hidden", signup: "hidden" });
+    }, SLIDE_MS);
     return () => clearTimeout(timer);
   }, [drawer]);
 
@@ -67,13 +86,14 @@ export default function AuthDrawer() {
 
   // Put the cursor in the first field once the card has slid in.
   useEffect(() => {
-    if (!open) return undefined;
-    const timer = setTimeout(() => (isSignup ? signupNameRef : loginEmailRef).current?.focus(), 350);
+    if (!drawer) return undefined;
+    const timer = setTimeout(() => (drawer === "signup" ? signupNameRef : loginEmailRef).current?.focus({ preventScroll: true }), 400);
     return () => clearTimeout(timer);
-  }, [open, isSignup]);
+  }, [drawer]);
 
   if (!mounted) return null;
 
+  // Send login credentials and display API errors in the active panel.
   async function submitLogin(e) {
     e.preventDefault();
     setBusy(true);
@@ -90,6 +110,7 @@ export default function AuthDrawer() {
     }
   }
 
+  // Validate and submit a new customer account.
   async function submitSignup(e) {
     e.preventDefault();
     if (signupForm.password.length < 6) {
@@ -126,27 +147,27 @@ export default function AuthDrawer() {
 
   const formInput = "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-orange-500 focus:ring-4 focus:ring-orange-100";
   const submitButton = "rw-btn w-full rounded-xl bg-orange-600 px-4 py-3 font-semibold text-white shadow-md shadow-orange-600/30 hover:bg-orange-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60";
-  const cardBase = "rw-auth-card absolute inset-0 flex flex-col justify-center overflow-y-auto bg-white px-6 py-10 shadow-2xl transition-[transform,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none sm:px-10";
+  const cardBase = "rw-auth-card absolute inset-0 flex flex-col justify-center overflow-y-auto bg-white px-6 py-10 shadow-2xl sm:px-10";
 
-  // Where is each card? Hidden to the right, on top, or tucked a little to the left under the other card.
-  const loginPosition = !open ? "translate-x-full" : !isSignup ? "translate-x-0" : loginWasShown ? "-translate-x-6 brightness-95" : "translate-x-full";
-  const signupPosition = open && isSignup ? "translate-x-0" : "translate-x-full";
+  // Only a card on top of the stack can be clicked or tabbed into.
+  const loginActive = isOnTop(cards.login);
+  const signupActive = isOnTop(cards.signup);
 
   return createPortal(
     <div
       role="presentation"
-      className={`fixed inset-0 z-[100] overflow-hidden bg-slate-950/50 backdrop-blur-sm transition-opacity duration-500 ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      className={`fixed inset-0 z-[100] overflow-hidden bg-slate-950/50 backdrop-blur-sm ${drawer ? "rw-overlay-in" : "rw-overlay-out pointer-events-none"}`}
       onClick={(event) => event.target === event.currentTarget && closeDrawer()}
     >
       <div className="absolute right-0 top-0 h-full w-full max-w-md">
-        {/* ---------- Login card ---------- */}
+        {/* Login panel and customer sign-in form. */}
         <section
           role="dialog"
           aria-modal="true"
           aria-labelledby="login-title"
-          aria-hidden={isSignup || !open}
-          inert={isSignup || !open ? "" : undefined}
-          className={`${cardBase} ${loginPosition} ${!isSignup && open ? "is-active z-10" : "z-0"}`}
+          aria-hidden={!loginActive}
+          inert={loginActive ? undefined : ""}
+          className={`${cardBase} ${CARD_CLASS[cards.login]}`}
         >
           <button type="button" onClick={closeDrawer} aria-label="Close dialog" className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full text-2xl text-slate-500 transition hover:rotate-90 hover:bg-slate-100 hover:text-slate-900">×</button>
           <img style={{ "--i": 0 }} src="/needs/carIcon-removebg-preview.png" className="rw-auth-item mx-auto mb-4 h-16 w-16 object-contain" alt="RentWheels logo" />
@@ -174,14 +195,14 @@ export default function AuthDrawer() {
           </p>
         </section>
 
-        {/* ---------- Sign-up card ---------- */}
+        {/* Sign-up panel and new customer account form. */}
         <section
           role="dialog"
           aria-modal="true"
           aria-labelledby="signup-title"
-          aria-hidden={!isSignup || !open}
-          inert={!isSignup || !open ? "" : undefined}
-          className={`${cardBase} ${signupPosition} ${isSignup && open ? "is-active z-20" : "z-20"}`}
+          aria-hidden={!signupActive}
+          inert={signupActive ? undefined : ""}
+          className={`${cardBase} ${CARD_CLASS[cards.signup]}`}
         >
           <button type="button" onClick={closeDrawer} aria-label="Close dialog" className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full text-2xl text-slate-500 transition hover:rotate-90 hover:bg-slate-100 hover:text-slate-900">×</button>
           <img style={{ "--i": 0 }} src="/needs/carIcon-removebg-preview.png" className="rw-auth-item mx-auto mb-4 h-16 w-16 object-contain" alt="RentWheels logo" />

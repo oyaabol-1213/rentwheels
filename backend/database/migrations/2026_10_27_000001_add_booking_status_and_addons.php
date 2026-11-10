@@ -9,6 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Add status, vehicle linkage, and add-on totals used by booking workflows.
         Schema::table('vehicle_bookings', function (Blueprint $table) {
             if (! Schema::hasColumn('vehicle_bookings', 'vehicle_id')) {
                 $table->integer('vehicle_id')->nullable();
@@ -39,6 +40,7 @@ return new class extends Migration
             }
         });
 
+        // Link legacy vehicle bookings to their fleet records when possible.
         if (Schema::hasColumn('vehicle_bookings', 'vehicle_id')) {
             DB::table('vehicle_bookings')
                 ->whereNull('vehicle_id')
@@ -62,6 +64,7 @@ return new class extends Migration
                 });
         }
 
+        // Index reservation dates and statuses for availability checks.
         $vehicleIndexes = collect(Schema::getIndexes('vehicle_bookings'))->pluck('name');
         if (! $vehicleIndexes->contains('idx_vehicle_bookings_vehicle_dates')) {
             Schema::table('vehicle_bookings', function (Blueprint $table) {

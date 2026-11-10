@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class EnsureAccount
 {
+    // Protect customer-only API routes from signed-out requests.
     public function handle(Request $request, Closure $next)
     {
         if (! Accounts::current()) {

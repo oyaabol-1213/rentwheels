@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // API authorization aliases for customers, admins, and Super Admins.
         $middleware->alias([
             'account' => \App\Http\Middleware\EnsureAccount::class,
             'admin'   => \App\Http\Middleware\EnsureAdmin::class,
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Keep API errors JSON-shaped for the React frontend.
         $exceptions->shouldRenderJsonWhen(
             fn ($request, $e) => $request->is('api/*') || $request->expectsJson()
         );

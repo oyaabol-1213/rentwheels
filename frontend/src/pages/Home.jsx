@@ -24,6 +24,7 @@ const BENEFITS = [
 
 const stars = (rating) => "★".repeat(Math.max(1, Math.min(5, Number(rating) || 1)));
 
+// Home page: hero links, featured fleet, service benefits, and customer reviews.
 export default function Home() {
   useDocumentTitle("RentWheels | Car Rentals & Bicol Tours");
   const { isLoggedIn, isAdmin, openLogin } = useAuth();
@@ -68,6 +69,7 @@ export default function Home() {
     <>
       <NavBar />
       <main>
+        {/* Home hero: primary links into vehicle rentals and tour reservations. */}
         <section className="relative flex min-h-[480px] items-center bg-slate-950 px-4 py-20 text-white sm:min-h-[560px]">
           <div className="absolute inset-0 bg-[url('/needs/background.jpg')] bg-cover bg-center opacity-50" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/70 to-slate-950/10" />
@@ -82,6 +84,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Featured vehicles introduce the fleet before the full catalog. */}
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div><p className="text-xs font-bold uppercase tracking-[0.25em] text-orange-600">Ready for the road</p><h2 className="mt-2 text-3xl font-bold text-slate-950">Featured vehicles</h2></div>
@@ -119,6 +122,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Reasons to rent with RentWheels. */}
         <section className="bg-orange-50">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-2xl text-center"><p className="text-xs font-bold uppercase tracking-[0.25em] text-orange-600">Travel with confidence</p><h2 className="mt-2 text-3xl font-bold text-slate-950">Why choose RentWheels?</h2></div>
@@ -134,6 +138,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Customer reviews and the signed-in customer review form trigger. */}
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div><p className="text-xs font-bold uppercase tracking-[0.25em] text-orange-600">Guest stories</p><h2 className="mt-2 text-3xl font-bold text-slate-950">Customer reviews</h2></div>
@@ -157,6 +162,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Service hub location and map. */}
         <section className="bg-slate-900 text-white">
           <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 md:grid-cols-2 md:items-center lg:px-8">
             <div>

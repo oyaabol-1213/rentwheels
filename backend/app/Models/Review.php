@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/** Customer reviews displayed on the public home page. */
 class Review extends Model
 {
     protected $table = 'reviews';

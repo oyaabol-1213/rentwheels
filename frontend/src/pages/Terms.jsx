@@ -3,6 +3,7 @@ import NavBar from "../components/NavBar.jsx";
 import Footer from "../components/Footer.jsx";
 import { useDocumentTitle } from "../hooks.js";
 
+// Public booking terms, cancellation rules, and availability/pricing notes.
 export default function Terms() {
   useDocumentTitle("Terms & Cancellation Policy | RentWheels");
 

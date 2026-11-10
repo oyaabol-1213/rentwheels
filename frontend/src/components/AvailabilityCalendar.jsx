@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+// Shared vehicle/tour date picker with booked and out-of-range dates disabled.
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function toISODate(date) {

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class EnsureSuperAdmin
 {
+    // Restrict sensitive admin management actions to the Super Admin account.
     public function handle(Request $request, Closure $next)
     {
         $admin = Auth::guard('admin')->user();

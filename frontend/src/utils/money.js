@@ -1,3 +1,4 @@
+// Shared price, date, and rental-duration helpers for website booking screens.
 export function priceNumber(text) {
   const numeric = String(text ?? "").replace(/[^0-9.]/g, "");
   return Number.parseFloat(numeric || "0");

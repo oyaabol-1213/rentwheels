@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
+    // Customer vehicle and Tour Van reservations, availability, and cancellations.
     private const ADMIN_BLOCK = "An Admin/Super Admin can't book or rent a vehicle.";
 
     // Philippine mobile number, e.g. 09123456789 or +639123456789 (spaces and dashes are removed first).
@@ -30,6 +31,7 @@ class BookingController extends Controller
         }
     }
 
+    // Dates already occupied by active Tour Van reservations.
     public function tourAvailability(Request $request)
     {
         $data = $request->validate([
@@ -52,6 +54,7 @@ class BookingController extends Controller
         ]);
     }
 
+    // Return the signed-in customer's vehicle and tour booking history.
     public function myBookings()
     {
         $userId = Auth::guard('web')->id();
@@ -114,6 +117,7 @@ class BookingController extends Controller
         ]);
     }
 
+    // Customers may cancel only their own pending reservations.
     public function cancelVehicleBooking(VehicleBooking $booking)
     {
         if ($booking->user_id !== Auth::guard('web')->id()) {
@@ -154,6 +158,7 @@ class BookingController extends Controller
         return response()->json(['message' => 'Tour booking cancelled.']);
     }
 
+    // Validate availability and create a vehicle reservation with server-calculated pricing.
     public function storeVehicle(Request $request)
     {
         if (Accounts::isAdmin(Accounts::current())) {
@@ -232,6 +237,7 @@ class BookingController extends Controller
         return $result;
     }
 
+    // Validate the Tour Van reservation, add-ons, and server-calculated total.
     public function storeTour(Request $request)
     {
         if (Accounts::isAdmin(Accounts::current())) {

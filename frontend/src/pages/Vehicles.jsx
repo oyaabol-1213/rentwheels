@@ -31,6 +31,7 @@ const futureISO = () => {
   return `${date.getFullYear()}-${month}-${day}`;
 };
 
+// Vehicle catalog, availability lookup, and customer vehicle reservation form.
 export default function Vehicles() {
   useDocumentTitle("Vehicles | RentWheels");
   const { user, isLoggedIn, isAdmin, openLogin } = useAuth();
@@ -218,6 +219,7 @@ export default function Vehicles() {
     <>
       <NavBar />
       <main>
+        {/* Fleet introduction and category filters. */}
         <section className="relative flex min-h-[300px] items-center justify-center overflow-hidden px-4 py-20 text-center text-white sm:min-h-[380px]">
           <img className="absolute inset-0 h-full w-full object-cover" src={needsUrl(currentTab?.hero || "featured-Picsart-AiImageEnhancer.jpg")} alt="" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/55 to-slate-950/25" />
@@ -251,6 +253,7 @@ export default function Vehicles() {
           </div>
         </section>
 
+        {/* Filtered fleet cards and links into a rental request. */}
         <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
           <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -300,6 +303,7 @@ export default function Vehicles() {
         </section>
       </main>
 
+      {/* Reservation details, rental-date calendar, and price estimate. */}
       {chosen && (
         <div className="rw-fade-in fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-sm" onClick={(event) => event.target === event.currentTarget && !confirming && setChosen(null)}>
           <section role="dialog" aria-modal="true" aria-labelledby="booking-title" className="rw-pop my-auto w-full max-w-2xl rounded-3xl bg-white p-5 shadow-2xl sm:p-7">

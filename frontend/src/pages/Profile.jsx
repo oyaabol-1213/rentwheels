@@ -6,6 +6,7 @@ import { useDocumentTitle } from "../hooks.js";
 
 const EMPTY_PASSWORD = { current_password: "", new_password: "", confirm_password: "" };
 
+// Customer/admin profile details, profile photo, and password settings.
 export default function Profile() {
   useDocumentTitle("My Profile | RentWheels");
   const { user, loading, isAdmin, setUser, logout, openLogin } = useAuth();
@@ -99,6 +100,7 @@ export default function Profile() {
           </section>
 
           <div className="space-y-6">
+            {/* Profile name, phone number, and avatar update form. */}
             <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
               <h2 className="text-xl font-bold text-slate-950">Edit profile</h2>
               <form className="mt-5 space-y-4" onSubmit={saveProfile}>
@@ -115,6 +117,7 @@ export default function Profile() {
               </form>
             </section>
 
+            {/* Password change form with current-password verification. */}
             <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
               <h2 className="text-xl font-bold text-slate-950">Change password</h2>
               <form className="mt-5 space-y-4" onSubmit={changePassword}>

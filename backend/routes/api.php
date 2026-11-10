@@ -16,7 +16,7 @@ Route::middleware('web')->group(function () {
     Route::post('/signup', [AuthController::class, 'signup'])->middleware('throttle:10,1');
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Public data
+    // Public fleet, vehicle availability, reviews, and Tour Van booking endpoints.
     Route::get('/vehicles', [VehicleController::class, 'index']);
     Route::get('/vehicles/{vehicle}/availability', [VehicleController::class, 'availability']);
     Route::get('/reviews', [ReviewController::class, 'index']);
@@ -25,7 +25,7 @@ Route::middleware('web')->group(function () {
     Route::get('/tour-bookings/availability', [BookingController::class, 'tourAvailability']);
     Route::post('/tour-bookings', [BookingController::class, 'storeTour']);
 
-    // Any signed-in account
+    // Customer account, profile, review, and booking endpoints.
     Route::middleware('account')->group(function () {
         Route::get('/my-bookings', [BookingController::class, 'myBookings']);
         Route::post('/vehicle-bookings', [BookingController::class, 'storeVehicle']);

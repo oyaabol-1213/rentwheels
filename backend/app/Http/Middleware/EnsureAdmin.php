@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class EnsureAdmin
 {
+    // Require an admin session for admin-panel API routes.
     public function handle(Request $request, Closure $next)
     {
         if (! Auth::guard('admin')->check()) {

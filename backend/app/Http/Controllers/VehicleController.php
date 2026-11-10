@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 class VehicleController extends Controller
 {
+    // Public fleet listing and vehicle rental availability endpoints.
     public function index()
     {
         return response()->json([

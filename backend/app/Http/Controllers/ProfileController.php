@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
+    // Update account details/photo and change the signed-in account password.
     public function update(Request $request)
     {
         $account = Accounts::current();

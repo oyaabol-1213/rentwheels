@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
+// Shared booking confirmation and success dialogs for vehicle and tour requests.
 // Two popups shared by the vehicle rental form and the tour van form:
 //   1. ConfirmBookingModal  - "Please review your details. Are you sure?"
 //   2. BookingSuccessModal  - "Your request was sent" with the booking number.

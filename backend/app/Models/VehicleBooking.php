@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/** Vehicle rental records and their customer/vehicle relationships. */
 class VehicleBooking extends Model
 {
     protected $table = 'vehicle_bookings';

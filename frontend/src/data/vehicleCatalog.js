@@ -1,3 +1,4 @@
+// Frontend-only vehicle photos, specifications, and catalog category definitions.
 // The `vehicles` table stores name / type / category / price / status / image (uploaded photo).
 // Spec chips and the photos of the original fleet were hard-coded in the old book.php,
 // so they live here, keyed by the vehicle name stored in the database.

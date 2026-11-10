@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 
+/** Existing vehicle fleet table and optional image-column compatibility checks. */
 class Vehicle extends Model
 {
     protected $table = 'vehicles';

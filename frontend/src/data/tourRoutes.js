@@ -1,3 +1,4 @@
+// Tour Van route options, display details, and booking prices shown on the site.
 export const TOUR_ROUTES = [
   {
     id: "mayon", status: "available", statusClass: "ok", statusText: "Available",
@@ -61,6 +62,7 @@ export const TOUR_ROUTES = [
   },
 ];
 
+// Short descriptions displayed for route stops in the Tour Van route board.
 export const STOP_NOTES = [
   "Photo stop and Mayon view.",
   "Scenic rest and food break.",
@@ -68,6 +70,7 @@ export const STOP_NOTES = [
   "Cultural stop before return.",
 ];
 
+// Route names accepted by the Tour Van reservation form.
 export const ROUTE_OPTIONS = [
   "Mayon Highlights Loop",
   "Legazpi Heritage and View Deck Tour",

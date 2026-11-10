@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// Shared HTTP client for the Laravel website API and readable API error messages.
 // Same-origin in dev (Vite proxy) and prod (Laravel serves the build), so the
 // session cookie + XSRF-TOKEN cookie "just work".
 const api = axios.create({

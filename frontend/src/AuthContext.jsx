@@ -3,12 +3,14 @@ import api from "./api.js";
 
 const AuthContext = createContext(null);
 
+// Shared customer/admin session state and the login/sign-up drawer controls.
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   // Which auth drawer panel is open: null | "login" | "signup"
   const [drawer, setDrawer] = useState(null);
 
+  // Restore the signed-in account when the app starts or refreshes.
   const refresh = useCallback(async () => {
     try {
       const { data } = await api.get("/me");
@@ -26,6 +28,7 @@ export function AuthProvider({ children }) {
     refresh();
   }, [refresh]);
 
+  // Login, sign-up, and logout keep account state in sync with Laravel.
   const login = useCallback(async (email, password) => {
     const { data } = await api.post("/login", { email, password });
     setUser(data.user);

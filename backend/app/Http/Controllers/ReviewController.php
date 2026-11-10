@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
+    // Public review listing and customer-only review submission.
     public function index(Request $request)
     {
         $limit = min(max((int) $request->query('limit', 6), 1), 50);

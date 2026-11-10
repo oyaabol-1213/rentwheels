@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/** Tour Van reservation records and their customer relationship. */
 class TourBooking extends Model
 {
     protected $table = 'tour_bookings';

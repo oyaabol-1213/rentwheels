@@ -10,6 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Vehicle catalog photo and customer-provided vehicle rental details.
         Schema::table('vehicles', function (Blueprint $table) {
             if (! Schema::hasColumn('vehicles', 'image')) {
                 $table->string('image', 255)->nullable();
@@ -34,6 +35,7 @@ return new class extends Migration
             }
         });
 
+        // Tour pickup and emergency-contact details collected at reservation time.
         Schema::table('tour_bookings', function (Blueprint $table) {
             if (! Schema::hasColumn('tour_bookings', 'pickup_location')) {
                 $table->string('pickup_location', 200)->nullable();

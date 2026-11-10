@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+// Fade page content into view as it enters the viewport.
 // Wraps a block and fades it in (slides up a little) the first time it scrolls into view.
 // Use the `delay` prop (milliseconds) to make a row of cards appear one after another.
 export default function Reveal({ children, delay = 0, className = "" }) {

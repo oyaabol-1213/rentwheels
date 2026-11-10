@@ -30,6 +30,7 @@ const QUESTIONS = [
   },
 ];
 
+// Public help page with answers about booking, availability, and payment.
 export default function FAQ() {
   useDocumentTitle("Frequently Asked Questions | RentWheels");
 

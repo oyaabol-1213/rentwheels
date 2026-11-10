@@ -1,5 +1,6 @@
 <?php
 
+// Laravel's HTTP entry point for the RentWheels website and API.
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 

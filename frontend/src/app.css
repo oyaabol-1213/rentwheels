@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Site-wide colors, typography, and layout defaults. */
 :root {
   color: #101828;
   background: #f8fafc;
@@ -9,6 +10,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable; /* keeps the page from jumping sideways when the login panel hides the scrollbar */
 }
 
 html, body, #root {
@@ -56,17 +58,39 @@ main {
 .rw-pop { animation: rw-pop 0.35s var(--rw-ease) both; }
 .rw-fade-in { animation: rw-fade-in 0.25s ease both; }
 
-/* Scroll reveal (see components/Reveal.jsx) */
-.rw-reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s ease, transform 0.6s var(--rw-ease);
-  transition-delay: var(--rw-delay, 0ms);
+/* Scroll reveal (see components/Reveal.jsx). A keyframe animation, so it always plays when the card appears. */
+@keyframes rw-reveal {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+.rw-reveal { opacity: 0; }
 .rw-reveal.is-visible {
-  opacity: 1;
-  transform: none;
+  animation: rw-reveal 0.6s var(--rw-ease) both;
+  animation-delay: var(--rw-delay, 0ms);
 }
+
+/* Login / sign-up panel: each card state has its own keyframe animation (see AuthDrawer.jsx).
+   Keyframes start as soon as the class is applied, so the slide always plays. */
+@keyframes rw-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes rw-slide-out {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+@keyframes rw-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.rw-card-hidden { transform: translateX(100%); }
+.rw-card-enter { animation: rw-slide-in 0.5s var(--rw-ease) both; }
+.rw-card-exit { animation: rw-slide-out 0.5s var(--rw-ease) both; }
+.rw-auth-card { will-change: transform; backface-visibility: hidden; }
+
+.rw-overlay-in { animation: rw-fade-in 0.5s ease both; }
+.rw-overlay-out { animation: rw-fade-out 0.5s ease both; }
 
 /* Login / sign-up cards: the text inside fades up one line at a time once the card is on top. */
 .rw-auth-card.is-active .rw-auth-item {
@@ -91,16 +115,4 @@ main {
   stroke-dasharray: 48;
   stroke-dashoffset: 48;
   animation: rw-draw 0.35s ease 0.6s forwards;
-}
-
-/* Respect people who turn animations off in their device settings. */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-delay: 0ms !important;
-    transition-duration: 0.01ms !important;
-    transition-delay: 0ms !important;
-  }
-  .rw-reveal { opacity: 1; transform: none; }
 }

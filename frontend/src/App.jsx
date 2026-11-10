@@ -10,6 +10,7 @@ import MyBookings from "./pages/MyBookings.jsx";
 import Terms from "./pages/Terms.jsx";
 import FAQ from "./pages/FAQ.jsx";
 
+// Shared route table for the public site, customer account pages, and admin panel.
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
+      {/* Page routes map each URL to its website screen; unknown paths return home. */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/vehicles" element={<Vehicles />} />
