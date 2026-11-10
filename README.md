@@ -83,6 +83,7 @@ RentWheels/
 │   └── tests/
 │
 └── README.md
+└── screenshots
 ```
 
 ---
