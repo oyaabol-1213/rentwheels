@@ -1,4 +1,4 @@
-# RentWheels 🚗
+# RentWheels 
 ### Vehicle Rental & Bicol Tour Van Booking System
 
 A web-based vehicle rental and tour van booking platform designed to make booking easier and more convenient. RentWheels allows customers to explore vehicles, reserve rental dates, and book tour vans for destinations around the Bicol Region.
