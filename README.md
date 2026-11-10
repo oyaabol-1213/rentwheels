@@ -1,11 +1,10 @@
 <div align="center">
 
 <h1>
-  <img src="screenshots/rentwheels-logo.png" width="55" align="center" />
+  <img src="screenshots/rentwheels-logo.png" width="55" align="center filter: brightness(0) invert(1);" />
   RentWheels
 </h1>
 
----
 
 ### Vehicle Rental & Bicol Tour Van Booking System
 
