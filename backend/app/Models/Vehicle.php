@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
+
+class Vehicle extends Model
+{
+    protected $table = 'vehicles';
+    const UPDATED_AT = null;
+    protected $fillable = ['name', 'type', 'category', 'price_per_day', 'status', 'image'];
+
+    public static function listingColumns(): array
+    {
+        $columns = ['id', 'name', 'type', 'category', 'price_per_day', 'status'];
+
+        if (Schema::hasColumn((new static)->getTable(), 'image')) {
+            $columns[] = 'image';
+        }
+
+        return $columns;
+    }
+
+    public static function hasImageColumn(): bool
+    {
+        return Schema::hasColumn((new static)->getTable(), 'image');
+    }
+}

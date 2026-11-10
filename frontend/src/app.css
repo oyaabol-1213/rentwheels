@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+:root {
+  color: #101828;
+  background: #f8fafc;
+  font-family: "Segoe UI", sans-serif;
+  --rw-ease: cubic-bezier(0.22, 1, 0.36, 1); /* soft "slow-down" curve used for all slides */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body, #root {
+  min-height: 100%;
+  min-height: 100vh;
+  margin: 0;
+}
+
+body {
+  background: linear-gradient(180deg, #fffaf5 0%, #f8fafc 100%);
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes rw-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rw-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rw-pop {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes rw-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes rw-ring {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Every page fades in when you open it (opacity only, so fixed popups still work). */
+main {
+  animation: rw-fade-in 0.5s ease both;
+}
+
+.rw-fade-up { animation: rw-fade-up 0.5s var(--rw-ease) both; }
+.rw-pop { animation: rw-pop 0.35s var(--rw-ease) both; }
+.rw-fade-in { animation: rw-fade-in 0.25s ease both; }
+
+/* Scroll reveal (see components/Reveal.jsx) */
+.rw-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s var(--rw-ease);
+  transition-delay: var(--rw-delay, 0ms);
+}
+.rw-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Login / sign-up cards: the text inside fades up one line at a time once the card is on top. */
+.rw-auth-card.is-active .rw-auth-item {
+  animation: rw-fade-up 0.55s var(--rw-ease) both;
+  animation-delay: calc(var(--i, 0) * 60ms + 250ms);
+}
+
+/* Buttons: a soft lift on hover and a small press effect on click. */
+.rw-btn {
+  transition: transform 0.2s var(--rw-ease), box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.rw-btn:not(:disabled):hover { transform: translateY(-2px); }
+.rw-btn:not(:disabled):active { transform: translateY(0) scale(0.97); }
+
+/* Animated success check mark */
+.rw-check-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: rw-draw 0.6s ease 0.15s forwards;
+}
+.rw-check-mark {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: rw-draw 0.35s ease 0.6s forwards;
+}
+
+/* Respect people who turn animations off in their device settings. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+  .rw-reveal { opacity: 1; transform: none; }
+}
