@@ -8,12 +8,18 @@ Developed as a final project for **Systems Analysis and Design (BSIT)**.
 ---
 
 ## Preview
+### Homepage
+![RentWheels Homepage](screenshots/homepage.png)
 
-<!-- Add your project screenshots here -->
+### Vehicles
+![Vehicles](screenshots/vehicles.png)
+(screenshots/vehicles-rent.png)
 
-<!-- Example:
-![RentWheels Homepage](frontend/public/screenshots/homepage.png)
--->
+### Tour Van
+![Tour Van](screenshots/booking.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/adminpanel.png)
 
 ---
 
