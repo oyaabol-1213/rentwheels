@@ -196,7 +196,7 @@ php artisan test
 
 ## License
 
-This project was developed for academic purposes as part of the Systems Analysis and Design course.
+This project was developed for academic purposes.
 
 ---
 
