@@ -1,104 +1,211 @@
-# RentWheels
+<div align="center">
 
-A vehicle rental and Bicol tour van booking website. Customers can browse vehicles, reserve them for chosen dates,
-and book a tour van. Admins manage vehicles and booking requests from a dashboard.
+<h1>
+  <img src="screenshots/rentwheels-logo.png" width="55" align="center" />
+  RentWheels
+</h1>
 
-Built as the final project for **Systems Analysis and Design**.
+---
+
+### Vehicle Rental & Bicol Tour Van Booking System
+
+A web-based vehicle rental and tour van booking platform designed to make booking easier and more convenient. RentWheels allows customers to explore vehicles, reserve rental dates, and book tour vans for destinations around the Bicol Region.
+
+Developed as a final project for **Systems Analysis and Design (BSIT)**.
+
+---
+
+## Preview
+### Homepage
+![RentWheels Homepage](screenshots/homepage.png)
+
+### Vehicles
+![Vehicles](screenshots/vehicles.png)
+![Vehicles](screenshots/vehicles-rent.png)
+
+### Tour Van
+![Tour Van](screenshots/tourvan.png)
+![Tour Van](screenshots/tourvan-route.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/adminpanel.png)
+
+---
 
 ## Features
 
-**Customers**
-- Sign up and log in (the login and sign-up panels slide in from the right)
-- Browse vehicles by category (Featured, Coupe, SUV, Family Car, Sports, Bikes)
-- Reserve a vehicle with a calendar that blocks dates that are already booked
-- Book a tour van with a route, guests, pick-up details, optional emergency contact and add-ons
-- An "Are you sure?" popup shows all the details before a request is sent
-- View and cancel your own bookings in **My Bookings**
-- Edit your profile and write reviews
+**For Customers**
+- Account registration and login
+- Browse vehicles by category
+- Reserve vehicles with an interactive booking calendar
+- Book tour vans with customizable trip details
+- View and cancel personal bookings
+- Manage profile information
+- Submit customer reviews
+- Booking confirmation before submitting requests
 
-**Admin and Super Admin**
-- Dashboard with totals, users, vehicles, bookings and reviews
-- Confirm or reject vehicle and tour booking requests
-- Super Admin only: add a vehicle with a photo, set its status to **Available**, **Limited** or **Unavailable**, and delete vehicles
+**For Administrators**
+- Dashboard with system statistics
+- Manage customer booking requests
+- Approve or reject vehicle and tour van reservations
+- Monitor vehicles, users, bookings, and reviews
 
-## Built with
+**For Super Administrators**
+- Add vehicles with photos and details
+- Update vehicle information
+- Manage vehicle availability
+- Delete vehicles
+- Set vehicle status to Available, Limited, or Unavailable
 
-| Part     | Technology                                          |
-|----------|-----------------------------------------------------|
-| Frontend | React 18, React Router, Axios, Tailwind CSS (Vite)  |
-| Backend  | Laravel (PHP), JSON API                             |
-| Database | MySQL (`vehicle_rentals`)                           |
+---
 
-## Project structure
+## Built With
 
+| Technology | Purpose |
+|---|---|
+| React 18 | Frontend |
+| React Router | Page navigation |
+| Tailwind CSS | UI styling |
+| Axios | API requests |
+| Vite | Development and build tool |
+| Laravel | Backend framework |
+| PHP | Backend programming language |
+| MySQL | Database |
+
+---
+
+## Project Structure
+
+```text
+RentWheels/
+├── frontend/       # React application
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── backend/        # Laravel application
+│   ├── app/
+│   ├── database/
+│   ├── routes/
+│   ├── public/
+│   └── tests/
+│
+└── README.md
+└── screenshots
 ```
-frontend/   React website (pages, components, styles)
-backend/    Laravel API (controllers, models, routes, migrations, tests)
+
+---
+
+## Getting Started
+
+### Requirements
+
+- PHP 8.3+
+- Composer
+- Node.js 18+
+- MySQL
+- XAMPP (recommended)
+
+### 1. Clone the Repository
+
+```bash
+git clone YOUR_REPOSITORY_URL
+cd RentWheels
 ```
 
-## How to run it
+### 2. Set Up the Database
 
-You need: **PHP 8.3+**, **Composer**, **Node 18+** and **MySQL** (for example through XAMPP).
+1. Start MySQL using XAMPP.
+2. Open phpMyAdmin.
+3. Create a database named `vehicle_rentals`.
+4. Import `backend/database/vehicle_rentals.sql`.
 
-### 1. Database
+### 3. Configure the Backend
 
-1. Start MySQL.
-2. Create a database named `vehicle_rentals`.
-3. Import `backend/database/vehicle_rentals.sql` using phpMyAdmin or MySQL Workbench.
-
-### 2. Backend (Laravel)
-
-```
+```bash
 cd backend
 composer install
 copy .env.example .env
 php artisan key:generate
 ```
 
-Open `backend/.env` and check these settings:
+Configure your `.env` file:
 
-```
+```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=vehicle_rentals
 DB_USERNAME=root
 DB_PASSWORD=
+
 SESSION_DRIVER=file
 CACHE_STORE=file
 QUEUE_CONNECTION=sync
 ```
 
-Then run:
+Start the Laravel server:
 
-```
-php artisan migrate
+```bash
 php artisan serve
 ```
 
-The API runs at `http://localhost:8000`.
+Backend URL: `http://localhost:8000`
 
-### 3. Frontend (React)
+### 4. Configure the Frontend
 
-Open a second terminal:
+Open another terminal:
 
-```
+```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Open **http://localhost:5173** in your browser.
+Frontend URL: `http://localhost:5173`
 
-## Running the tests
+---
 
-```
+## Booking Status
+
+| Status | Description |
+|---|---|
+| Pending | Waiting for administrator approval |
+| Confirmed | Booking request approved |
+| Rejected | Booking request declined |
+| Cancelled | Booking cancelled |
+
+---
+
+## Running Tests
+
+Run the backend tests using:
+
+```bash
 cd backend
 php artisan test
 ```
 
-## Notes
+---
 
-- Vehicle photos uploaded by the Super Admin are saved in `backend/public/uploads/vehicles/`.
-- Mobile numbers use the Philippine format, such as `09123456789`.
-- A booking request stays **Pending** until an admin confirms it.
+## Project Information
+
+| | |
+|---|---|
+| **Project** | RentWheels |
+| **Category** | Web-Based Booking System |
+| **Course** | BSIT |
+| **Subject** | Systems Analysis and Design |
+| **Frontend** | React + Tailwind CSS |
+| **Backend** | Laravel + PHP |
+| **Database** | MySQL |
+
+---
+
+## License
+
+This project was developed for academic purposes.
+
+---
+
+**RentWheels** | Making every trip easier, one booking at a time.
