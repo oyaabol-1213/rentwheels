@@ -13,10 +13,11 @@ Developed as a final project for **Systems Analysis and Design (BSIT)**.
 
 ### Vehicles
 ![Vehicles](screenshots/vehicles.png)
-(screenshots/vehicles-rent.png)
+![Vehicles](screenshots/vehicles-rent.png)
 
 ### Tour Van
-![Tour Van](screenshots/booking.png)
+![Tour Van](screenshots/tourvan.png)
+![Tour Van](screenshots/tourvan-route.png)
 
 ### Admin Dashboard
 ![Admin Dashboard](screenshots/adminpanel.png)
