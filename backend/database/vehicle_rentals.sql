@@ -1,6 +1,3 @@
--- Fresh-install schema for RentWheels.
--- Import into a new/empty vehicle_rentals database. This file does not upgrade
--- an existing database; use the Laravel migration for that.
 CREATE DATABASE IF NOT EXISTS `vehicle_rentals`
   DEFAULT CHARACTER SET utf8mb4
   DEFAULT COLLATE utf8mb4_general_ci;
