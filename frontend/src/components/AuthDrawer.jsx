@@ -181,9 +181,15 @@ export default function AuthDrawer() {
             <label style={{ "--i": 4 }} className="rw-auth-item block text-sm font-medium text-slate-700">Email
               <input ref={loginEmailRef} className={`mt-1.5 ${formInput}`} type="email" required autoComplete="email" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} />
             </label>
-            <label style={{ "--i": 5 }} className="rw-auth-item block text-sm font-medium text-slate-700">Password
-              <input className={`mt-1.5 ${formInput}`} type="password" required autoComplete="current-password" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
-            </label>
+            <div style={{ "--i": 5 }} className="rw-auth-item">
+              <label className="block text-sm font-medium text-slate-700">
+                Password
+                <input className={`mt-1.5 ${formInput}`} type="password" required autoComplete="current-password" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
+              </label>
+              <div className="mt-2 flex justify-end">
+                <button type="button" className="text-sm font-medium text-orange-700 underline-offset-2 transition hover:text-orange-900 hover:underline">Forgot password?</button>
+              </div>
+            </div>
             <div style={{ "--i": 6 }} className="rw-auth-item">
               <button type="submit" disabled={busy} className={submitButton}>{busy ? "Please wait…" : "Log in"}</button>
             </div>

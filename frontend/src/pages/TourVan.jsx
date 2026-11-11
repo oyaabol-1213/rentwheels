@@ -191,10 +191,10 @@ export default function TourVan() {
   return (
     <>
       <NavBar />
-      <main className="bg-gradient-to-b from-orange-50 via-white to-slate-50">
+      <main className="bg-gradient-to-b from-orange-100 via-gray-200 to-orange-100">
         {/* Tour overview and reservation form, including calendar and optional add-ons. */}
         <section className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:py-16">
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-top">
             <span className="w-fit rounded-full border border-orange-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-orange-700">Explore Bicol with RentWheels</span>
             <h1 className="mt-5 max-w-3xl text-4xl font-extrabold leading-tight text-slate-950 sm:text-5xl">Private van rental for memorable Bicol trips.</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">Plan a flexible day trip with a local driver, clear pricing, and a live calendar that helps you find an open tour date.</p>
