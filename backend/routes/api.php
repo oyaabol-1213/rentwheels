@@ -14,6 +14,9 @@ Route::middleware('web')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
     Route::post('/signup', [AuthController::class, 'signup'])->middleware('throttle:10,1');
+    Route::post('/forgot-password', [AuthController::class, 'sendPasswordResetCode'])->middleware('throttle:10,1');
+    Route::post('/verify-password-reset-code', [AuthController::class, 'verifyPasswordResetCode'])->middleware('throttle:10,1');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:10,1');
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Public fleet, vehicle availability, reviews, and Tour Van booking endpoints.

@@ -9,6 +9,8 @@ import Admin from "./pages/Admin.jsx";
 import MyBookings from "./pages/MyBookings.jsx";
 import Terms from "./pages/Terms.jsx";
 import FAQ from "./pages/FAQ.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 
 // Shared route table for the public site, customer account pages, and admin panel.
 function ScrollToTop() {
@@ -33,6 +35,8 @@ export default function App() {
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/faq" element={<FAQ />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -23,6 +23,36 @@ export default function NavBar() {
     navigate("/");
   }
 
+  function handleContactClick(event) {
+    event.preventDefault();
+    setMenuOpen(false);
+
+    const footer = document.getElementById("footer");
+    if (!footer) return;
+
+    const start = window.scrollY;
+    const headerHeight = document.querySelector("header")?.getBoundingClientRect().height ?? 0;
+    const end = Math.max(0, footer.getBoundingClientRect().top + start - headerHeight);
+    const distance = end - start;
+    const duration = 900;
+    let startTime;
+
+    function animateScroll(timestamp) {
+      if (startTime === undefined) startTime = timestamp;
+
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easedProgress = progress < 0.5
+        ? 4 * progress ** 3
+        : 1 - ((-2 * progress + 2) ** 3) / 2;
+
+      window.scrollTo({ top: start + distance * easedProgress, behavior: "instant" });
+
+      if (progress < 1) window.requestAnimationFrame(animateScroll);
+    }
+
+    window.requestAnimationFrame(animateScroll);
+  }
+
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur">
@@ -60,7 +90,7 @@ export default function NavBar() {
                 {label}
               </Link>
             ))}
-            <a href="#footer" onClick={() => setMenuOpen(false)} className="rounded-full px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">Contact</a>
+            <a href="#footer" onClick={handleContactClick} className="rounded-full px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100">Contact</a>
           </div>
 
           {/* Account menu for signed-in users; login drawer button for visitors. */}

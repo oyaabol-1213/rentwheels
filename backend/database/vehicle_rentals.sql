@@ -16,6 +16,13 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `uniq_users_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
+  `email` varchar(191) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 CREATE TABLE IF NOT EXISTS `admin_accounts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,

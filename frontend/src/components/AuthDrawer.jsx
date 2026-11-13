@@ -187,7 +187,7 @@ export default function AuthDrawer() {
                 <input className={`mt-1.5 ${formInput}`} type="password" required autoComplete="current-password" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
               </label>
               <div className="mt-2 flex justify-end">
-                <button type="button" className="text-sm font-medium text-orange-700 underline-offset-2 transition hover:text-orange-900 hover:underline">Forgot password?</button>
+                <button type="button" onClick={() => { closeDrawer(); navigate("/forgot-password"); }} className="text-sm font-medium text-orange-700 underline-offset-2 transition hover:text-orange-900 hover:underline">Forgot password?</button>
               </div>
             </div>
             <div style={{ "--i": 6 }} className="rw-auth-item">

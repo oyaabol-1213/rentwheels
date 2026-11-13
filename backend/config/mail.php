@@ -111,7 +111,9 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'address' => env('MAIL_MAILER') === 'smtp'
+            ? env('MAIL_USERNAME', env('MAIL_FROM_ADDRESS', 'hello@example.com'))
+            : env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
