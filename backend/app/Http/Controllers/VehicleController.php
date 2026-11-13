@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 class VehicleController extends Controller
 {
     // Public fleet listing and vehicle rental availability endpoints.
+    // Return the fleet fields needed by the vehicle catalog.
     public function index()
     {
         return response()->json([
@@ -17,6 +18,7 @@ class VehicleController extends Controller
         ]);
     }
 
+    // Return active booking date ranges within the requested calendar window.
     public function availability(Request $request, Vehicle $vehicle)
     {
         $data = $request->validate([

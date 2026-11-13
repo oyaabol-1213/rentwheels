@@ -60,6 +60,10 @@ export default function Admin() {
   const [notice, setNotice] = useState(null);
   const [adminForm, setAdminForm] = useState(EMPTY_ADMIN);
   const [vehicleForm, setVehicleForm] = useState(EMPTY_VEHICLE);
+  const [vehicleDetails, setVehicleDetails] = useState([]);
+  const [vehicleDetailsInput, setVehicleDetailsInput] = useState("");
+  const [confirmingVehicle, setConfirmingVehicle] = useState(false);
+  const [savingVehicle, setSavingVehicle] = useState(false);
   const [photo, setPhoto] = useState(null); // the chosen File
   const [photoPreview, setPhotoPreview] = useState("");
   const [photoInputKey, setPhotoInputKey] = useState(0); // changing this empties the file box
@@ -130,16 +134,57 @@ export default function Admin() {
     return () => URL.revokeObjectURL(url);
   }, [photo]);
 
+  // Save vehicle data and the comma-separated detail chips to the fleet API.
   function addVehicle(event) {
     event.preventDefault();
+    setNotice(null);
+    setConfirmingVehicle(true);
+  }
+
+  function getVehicleDetailsValue() {
+    return [...vehicleDetails, vehicleDetailsInput.trim()].filter(Boolean).join(", ");
+  }
+
+  // Submit the vehicle only after the admin confirms the details in the review dialog.
+  async function confirmAddVehicle() {
     // A photo means the data is sent as a form (multipart), not plain JSON.
     const body = new FormData();
     Object.entries(vehicleForm).forEach(([key, value]) => body.append(key, value));
+    body.append("details", getVehicleDetailsValue());
     if (photo) body.append("image", photo);
-    run(() => api.post("/admin/vehicles", body), () => {
+    setSavingVehicle(true);
+    await run(() => api.post("/admin/vehicles", body), () => {
       setVehicleForm(EMPTY_VEHICLE);
+      setVehicleDetails([]);
+      setVehicleDetailsInput("");
       clearPhoto();
+      setConfirmingVehicle(false);
     });
+    setSavingVehicle(false);
+  }
+
+  // Turn each comma-delimited entry into a removable chip, including pasted text.
+  function updateVehicleDetailsInput(value) {
+    const parts = value.split(",");
+    if (parts.length > 1) {
+      const tags = parts.slice(0, -1).map((part) => part.trim()).filter(Boolean);
+      setVehicleDetails((current) => [...current, ...tags]);
+      setVehicleDetailsInput(parts[parts.length - 1].trimStart());
+    } else {
+      setVehicleDetailsInput(value);
+    }
+  }
+
+  // Enter commits the current chip; Backspace removes the last chip when input is empty.
+  function handleVehicleDetailsKeyDown(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const tag = vehicleDetailsInput.trim();
+      if (tag) setVehicleDetails((current) => [...current, tag]);
+      setVehicleDetailsInput("");
+    } else if (event.key === "Backspace" && !vehicleDetailsInput && vehicleDetails.length) {
+      setVehicleDetails((current) => current.slice(0, -1));
+    }
   }
 
   function setVehicleStatus(vehicle, status) {
@@ -206,6 +251,19 @@ export default function Admin() {
                 <label className="text-sm font-medium text-slate-700">Category<input className={`mt-1 ${inputClass}`} required value={vehicleForm.category} onChange={(event) => setVehicleForm({ ...vehicleForm, category: event.target.value })} /></label>
                 <label className="text-sm font-medium text-slate-700">Rate per day<input className={`mt-1 ${inputClass}`} placeholder="Php 2,400.00" required value={vehicleForm.price_per_day} onChange={(event) => setVehicleForm({ ...vehicleForm, price_per_day: event.target.value })} /></label>
                 <label className="text-sm font-medium text-slate-700 sm:col-span-2">Availability<select className={`mt-1 ${inputClass}`} value={vehicleForm.status} onChange={(event) => setVehicleForm({ ...vehicleForm, status: event.target.value })}>{STATUS_OPTIONS.map((status) => <option key={status}>{status}</option>)}</select></label>
+                <div className="sm:col-span-2">
+                  <label htmlFor="vehicle-details" className="block text-sm font-medium text-slate-700">Vehicle details <span className="font-normal text-slate-400">(separate each detail with a comma)</span></label>
+                  <div className="mt-1 flex min-h-11 flex-wrap items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 transition hover:border-slate-400 focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-100">
+                    {vehicleDetails.map((detail, index) => (
+                      <span key={`${detail}-${index}`} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600">
+                        {detail}
+                        <button type="button" aria-label={`Remove ${detail}`} className="font-bold text-slate-400 hover:text-rose-600" onClick={() => setVehicleDetails((current) => current.filter((_, tagIndex) => tagIndex !== index))}>×</button>
+                      </span>
+                    ))}
+                    <input id="vehicle-details" className="min-w-32 flex-1 border-0 bg-transparent p-1 text-sm text-slate-900 outline-none placeholder:text-slate-400" placeholder="2 seats | Gasoline, 150cc, etc." value={vehicleDetailsInput} onChange={(event) => updateVehicleDetailsInput(event.target.value)} onKeyDown={handleVehicleDetailsKeyDown} />
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">Example: 2 seats | Gasoline, 150cc, 6-Speed, Underbone</p>
+                </div>
 
                 <div className="sm:col-span-2">
                   <span className="block text-sm font-medium text-slate-700">Vehicle photo <span className="font-normal text-slate-400">(JPG, PNG or WEBP, up to {MAX_PHOTO_MB} MB)</span></span>
@@ -231,7 +289,7 @@ export default function Admin() {
                   )}
                 </div>
 
-                <div className="sm:col-span-2"><button className="rw-btn rounded-full bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-orange-600/30 hover:bg-orange-700">Add vehicle</button></div>
+                <div className="sm:col-span-2"><button className="rw-btn rounded-full bg-orange-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-orange-600/30 hover:bg-orange-700">Review and add vehicle</button></div>
               </form>
             ) : <p className="mt-3 text-sm text-slate-500">Only the Super Admin can manage vehicles.</p>}
           </section>
@@ -299,6 +357,46 @@ export default function Admin() {
           {data?.reviews.map((review) => <tr key={review.id}><Cell>{review.reviewer_name}</Cell><Cell>{dash(review.email)}</Cell><Cell>{review.rating}/5</Cell><Cell className="max-w-lg whitespace-normal">{review.review_text}</Cell><Cell>{review.created_at}</Cell></tr>)}
         </Table>
       </div>
+
+      {confirmingVehicle && (
+        <div className="rw-fade-in fixed inset-0 z-[120] flex items-center justify-center overflow-y-auto bg-slate-950/60 p-4 backdrop-blur-sm">
+          <section role="alertdialog" aria-modal="true" aria-labelledby="confirm-vehicle-title" className="rw-pop my-auto w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
+            <h2 id="confirm-vehicle-title" className="text-center text-2xl font-bold text-slate-950">Confirm vehicle details</h2>
+            <p className="mt-1 text-center text-sm text-slate-500">Review this information before adding the vehicle to the fleet.</p>
+            {photoPreview && <img className="mt-5 h-40 w-full rounded-2xl object-cover" src={photoPreview} alt={`Preview of ${vehicleForm.name || "vehicle"}`} />}
+            <dl className="mt-5 divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-slate-50/70 text-sm">
+              {[
+                ["Name", vehicleForm.name],
+                ["Type", vehicleForm.type],
+                ["Category", vehicleForm.category],
+                ["Rate per day", vehicleForm.price_per_day],
+                ["Availability", vehicleForm.status],
+              ].map(([label, value]) => (
+                <div key={label} className="flex items-start justify-between gap-4 px-4 py-2.5">
+                  <dt className="shrink-0 text-slate-500">{label}</dt>
+                  <dd className="text-right font-semibold text-slate-900">{value || "—"}</dd>
+                </div>
+              ))}
+              <div className="flex items-start justify-between gap-4 px-4 py-2.5">
+                <dt className="shrink-0 text-slate-500">Details</dt>
+                <dd className="flex flex-wrap justify-end gap-1.5">
+                  {getVehicleDetailsValue()
+                    ? getVehicleDetailsValue().split(",").map((detail) => detail.trim()).filter(Boolean).map((detail, index) => (
+                        <span key={`${detail}-${index}`} className="rounded-full bg-white px-2.5 py-1 text-xs text-slate-700 ring-1 ring-slate-200">{detail}</span>
+                      ))
+                    : <span className="font-semibold text-slate-900">Details on request</span>}
+                </dd>
+              </div>
+            </dl>
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
+              <button type="button" disabled={savingVehicle} onClick={() => setConfirmingVehicle(false)} className="rw-btn flex-1 rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">Back to edit</button>
+              <button type="button" disabled={savingVehicle} onClick={confirmAddVehicle} className="rw-btn flex-1 rounded-full bg-orange-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-orange-600/30 hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60">
+                {savingVehicle ? "Adding…" : "Confirm and add"}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

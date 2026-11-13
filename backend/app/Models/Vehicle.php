@@ -10,7 +10,7 @@ class Vehicle extends Model
 {
     protected $table = 'vehicles';
     const UPDATED_AT = null;
-    protected $fillable = ['name', 'type', 'category', 'price_per_day', 'status', 'image'];
+    protected $fillable = ['name', 'type', 'category', 'price_per_day', 'status', 'image', 'details'];
 
     public static function listingColumns(): array
     {
@@ -18,6 +18,10 @@ class Vehicle extends Model
 
         if (Schema::hasColumn((new static)->getTable(), 'image')) {
             $columns[] = 'image';
+        }
+
+        if (Schema::hasColumn((new static)->getTable(), 'details')) {
+            $columns[] = 'details';
         }
 
         return $columns;

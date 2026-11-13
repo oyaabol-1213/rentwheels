@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
@@ -145,6 +146,7 @@ class AdminController extends Controller
             'category' => ['required', 'string', 'max:100'],
             'price_per_day' => ['required', 'string', 'max:50'],
             'status' => ['nullable', 'in:Available,Limited,Unavailable'],
+            'details' => ['nullable', 'string', 'max:2000'],
             'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ], [
             'required' => 'Please complete the vehicle form.',
@@ -175,6 +177,14 @@ class AdminController extends Controller
             'price_per_day' => Money::format($price),
             'status' => $data['status'] ?? 'Available',
         ];
+
+        // Store detail chips as a normalized comma-separated string for the catalog.
+        if (Schema::hasColumn('vehicles', 'details')) {
+            $vehicleData['details'] = collect(explode(',', $data['details'] ?? ''))
+                ->map(fn ($detail) => trim($detail))
+                ->filter()
+                ->implode(', ');
+        }
 
         if (Vehicle::hasImageColumn()) {
             $vehicleData['image'] = $imagePath;

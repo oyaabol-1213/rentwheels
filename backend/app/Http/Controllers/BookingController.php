@@ -138,6 +138,7 @@ class BookingController extends Controller
         return response()->json(['message' => 'Vehicle booking cancelled.']);
     }
 
+    // Cancel a tour reservation only when it belongs to the customer and is pending.
     public function cancelTourBooking(TourBooking $booking)
     {
         if ($booking->user_id !== Auth::guard('web')->id()) {

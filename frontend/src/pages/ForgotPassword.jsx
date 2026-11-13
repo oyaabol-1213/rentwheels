@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api, { errorMessage } from "../api.js";
 import { useDocumentTitle } from "../hooks.js";
 
+// Password recovery page: request a code, verify it, and pass the reset token onward.
 export default function ForgotPassword() {
   useDocumentTitle("Forgot Password | RentWheels");
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export default function ForgotPassword() {
     return () => clearTimeout(timer);
   }, [resendSeconds]);
 
+  // Request or resend the email verification code.
   async function sendCode(event) {
     event.preventDefault();
     setBusy(true);
@@ -37,6 +39,7 @@ export default function ForgotPassword() {
     }
   }
 
+  // Verify the emailed code before allowing the password to be changed.
   async function verifyCode(event) {
     event.preventDefault();
     setBusy(true);
@@ -56,6 +59,7 @@ export default function ForgotPassword() {
     }
   }
 
+  // Return to the email step and clear the previous verification state.
   function changeEmail() {
     setStep("email");
     setCode("");

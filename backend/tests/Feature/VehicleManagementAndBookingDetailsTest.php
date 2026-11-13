@@ -51,6 +51,7 @@ class VehicleManagementAndBookingDetailsTest extends TestCase
             $table->string('price_per_day');
             $table->string('status');
             $table->string('image')->nullable();
+            $table->text('details')->nullable();
             $table->timestamp('created_at')->nullable();
         });
 
@@ -151,7 +152,7 @@ class VehicleManagementAndBookingDetailsTest extends TestCase
         ], $overrides);
     }
 
-    // ---- Add vehicle with photo ----
+    // ---- Add vehicles, optional photos, and catalog details ----
 
     public function test_super_admin_can_add_a_vehicle_with_a_photo(): void
     {
@@ -178,10 +179,15 @@ class VehicleManagementAndBookingDetailsTest extends TestCase
         $this->actingAs($this->superAdmin(), 'admin')
             ->postJson('/api/admin/vehicles', [
                 'name' => 'Yamaha Sniper', 'type' => 'Bike', 'category' => 'Bikes', 'price_per_day' => 'Php 900.00',
+                'details' => '2 seats | Gasoline, 150cc, 6-Speed, Underbone',
             ])->assertCreated();
 
         $this->assertNull(Vehicle::first()->image);
         $this->assertSame('Available', Vehicle::first()->status);
+        $this->assertSame('2 seats | Gasoline, 150cc, 6-Speed, Underbone', Vehicle::first()->details);
+        $this->getJson('/api/vehicles')
+            ->assertOk()
+            ->assertJsonPath('vehicles.0.details', '2 seats | Gasoline, 150cc, 6-Speed, Underbone');
     }
 
     public function test_non_image_files_are_rejected(): void

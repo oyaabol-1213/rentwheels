@@ -1,5 +1,5 @@
 // Frontend-only vehicle photos, specifications, and catalog category definitions.
-// The `vehicles` table stores name / type / category / price / status / image (uploaded photo).
+// The `vehicles` table stores name / type / category / price / status / image / details.
 // Spec chips and the photos of the original fleet were hard-coded in the old book.php,
 // so they live here, keyed by the vehicle name stored in the database.
 const img = (file) => encodeURI(`/needs/${file}`);
@@ -32,11 +32,12 @@ const FALLBACK = { image: "background.jpg", seats: "Details on request", specs: 
  */
 export function withMeta(vehicle) {
   const meta = VEHICLE_META[vehicle.name] || FALLBACK;
+  const details = vehicle.details?.split(",").map((detail) => detail.trim()).filter(Boolean);
   return {
     ...vehicle,
     imageUrl: vehicle.image ? `/${vehicle.image}` : img(meta.image),
-    seats: meta.seats,
-    specs: meta.specs,
+    seats: details?.[0] || meta.seats,
+    specs: details?.length ? details.slice(1) : meta.specs,
     deal: !!meta.deal,
   };
 }

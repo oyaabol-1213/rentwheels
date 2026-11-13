@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation } from "react-router-dom";
 import api, { errorMessage } from "../api.js";
 import { useDocumentTitle } from "../hooks.js";
 
+// Set a new password using the short-lived token issued after code verification.
 export default function ResetPassword() {
   useDocumentTitle("Reset Password | RentWheels");
   const { state } = useLocation();
@@ -16,6 +17,7 @@ export default function ResetPassword() {
 
   if (!email || !token) return <Navigate to="/forgot-password" replace />;
 
+  // Submit and confirm the new password through the password-reset API.
   async function submit(event) {
     event.preventDefault();
     setBusy(true);

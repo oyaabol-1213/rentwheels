@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\RateLimiter;
 class AuthController extends Controller
 {
     // Session restoration and customer/admin authentication endpoints.
+    // Restore the account currently authenticated by either session guard.
     public function me()
     {
         $account = Accounts::current();
@@ -24,6 +25,7 @@ class AuthController extends Controller
     }
 
     /** Same lookup order as the old login.php: admin_accounts first, then users. */
+    // Start the matching customer or admin session after checking the password.
     public function login(Request $request)
     {
         $data = $request->validate([
@@ -84,6 +86,7 @@ class AuthController extends Controller
         return response()->json(['user' => Accounts::payload($user)], 201);
     }
 
+    // Send a short-lived reset code without revealing whether an email is registered.
     public function sendPasswordResetCode(Request $request)
     {
         $data = $request->validate([
@@ -109,6 +112,7 @@ class AuthController extends Controller
         ]);
     }
 
+    // Verify the email code and exchange it for a temporary password-reset token.
     public function verifyPasswordResetCode(Request $request)
     {
         $data = $request->validate([
@@ -159,6 +163,7 @@ class AuthController extends Controller
         return response()->json(['reset_token' => $resetToken]);
     }
 
+    // Change the password once and invalidate the verified reset token.
     public function resetPassword(Request $request)
     {
         $data = $request->validate([
@@ -203,6 +208,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Your password has been reset.']);
     }
 
+    // Create a stable, non-plaintext key for limiting verification attempts per email.
     private function passwordResetCodeRateLimitKey(string $email): string
     {
         return 'password-reset-code:'.hash('sha256', $email);
@@ -218,6 +224,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out']);
     }
 
+    // Ensure only one account guard remains signed in for the current session.
     private function signOutEverywhere(): void
     {
         Auth::guard('admin')->logout();

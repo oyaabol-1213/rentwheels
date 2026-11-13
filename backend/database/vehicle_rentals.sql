@@ -1,9 +1,11 @@
+-- Create the database used by the RentWheels vehicle rental website.
 CREATE DATABASE IF NOT EXISTS `vehicle_rentals`
   DEFAULT CHARACTER SET utf8mb4
   DEFAULT COLLATE utf8mb4_general_ci;
 
 USE `vehicle_rentals`;
 
+-- Customer accounts and one-time password-reset codes.
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,
@@ -23,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Admin accounts, including the super-admin role.
 CREATE TABLE IF NOT EXISTS `admin_accounts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,
@@ -36,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `admin_accounts` (
   UNIQUE KEY `uniq_admin_accounts_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Vehicle reservations, dates, status, add-ons, and customer pickup information.
 CREATE TABLE IF NOT EXISTS `vehicle_bookings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -64,6 +68,7 @@ CREATE TABLE IF NOT EXISTS `vehicle_bookings` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Tour Van reservations, optional guest accounts, and pickup/emergency contacts.
 CREATE TABLE IF NOT EXISTS `tour_bookings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
@@ -89,6 +94,7 @@ CREATE TABLE IF NOT EXISTS `tour_bookings` (
     ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Customer reviews shown on the public website.
 CREATE TABLE IF NOT EXISTS `reviews` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -103,6 +109,7 @@ CREATE TABLE IF NOT EXISTS `reviews` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Fleet records and the details displayed as chips on public vehicle cards.
 CREATE TABLE IF NOT EXISTS `vehicles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(150) NOT NULL,
@@ -111,10 +118,12 @@ CREATE TABLE IF NOT EXISTS `vehicles` (
   `price_per_day` varchar(50) NOT NULL,
   `status` varchar(30) NOT NULL DEFAULT 'Available',
   `image` varchar(255) DEFAULT NULL,
+  `details` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Seed the fleet used by the catalog, without duplicating existing vehicles.
 INSERT INTO `vehicles` (`name`, `type`, `category`, `price_per_day`, `status`)
 VALUES
   ('Mercedes-Benz C-Class', 'Car', 'Featured', 'Php 3,200.00', 'Available'),
@@ -142,6 +151,7 @@ ON DUPLICATE KEY UPDATE
   `price_per_day` = VALUES(`price_per_day`),
   `status` = VALUES(`status`);
 
+-- Seed the initial super-admin account for first-time setup.
 INSERT INTO `admin_accounts` (`name`, `email`, `password`, `phone`, `profile_image`, `role`)
 VALUES
   ('Super Admin', 'admin@rentwheels.com', '$2y$10$/02d71yTIfHbE8r1C5XBWOerVH1yluWRku56tj5tueNhqJNrCRBZ.', NULL, NULL, 'super_admin')

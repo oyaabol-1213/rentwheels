@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class ReviewController extends Controller
 {
     // Public review listing and customer-only review submission.
+    // Return the newest reviews, capped to a safe page size.
     public function index(Request $request)
     {
         $limit = min(max((int) $request->query('limit', 6), 1), 50);
@@ -20,6 +21,7 @@ class ReviewController extends Controller
         ]);
     }
 
+    // Save a validated review under the signed-in customer's account.
     public function store(Request $request)
     {
         // reviews.user_id has a foreign key to users, so only customers can review.
