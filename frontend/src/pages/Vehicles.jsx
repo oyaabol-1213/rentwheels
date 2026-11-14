@@ -8,7 +8,7 @@ import Footer from "../components/Footer.jsx";
 import { BookingSuccessModal, ConfirmBookingModal } from "../components/BookingModals.jsx";
 import { CATEGORY_TABS, needsUrl, withMeta } from "../data/vehicleCatalog.js";
 import { formatDisplayDate, formatPeso, priceNumber, rentalDays, todayISO } from "../utils/money.js";
-import { cleanPhone, formatTime, isValidLicense, isValidPhone } from "../utils/validators.js";
+import { cleanPhone, formatLicenseNumber, formatTime, isValidLicense, isValidPhone } from "../utils/validators.js";
 import { useDocumentTitle } from "../hooks.js";
 
 // Quick suggestions for the pick-up location box (the customer can still type anything).
@@ -325,7 +325,7 @@ export default function Vehicles() {
                   <input className={inputClass} type="tel" inputMode="tel" required placeholder="09123456789" maxLength={20} autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} />
                 </label>
                 <label className="block text-sm font-medium text-slate-700">Driver's license no.
-                  <input className={inputClass} type="text" required placeholder="N01-23-456789" maxLength={20} value={license} onChange={(event) => setLicense(event.target.value)} />
+                  <input className={inputClass} type="text" required placeholder="N01-23-456789" maxLength={13} value={license} onChange={(event) => setLicense(formatLicenseNumber(event.target.value))} />
                 </label>
                 <label className="block text-sm font-medium text-slate-700">Pick-up time
                   <input className={inputClass} type="time" required value={pickupTime} onChange={(event) => setPickupTime(event.target.value)} />

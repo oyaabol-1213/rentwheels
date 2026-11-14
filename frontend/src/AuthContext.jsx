@@ -37,8 +37,9 @@ export function AuthProvider({ children }) {
 
   const signup = useCallback(async (payload) => {
     const { data } = await api.post("/signup", payload);
-    setUser(data.user);
-    return data.user;
+    // New accounts must verify their email first, so there is no signed-in user yet.
+    if (data.user) setUser(data.user);
+    return data;
   }, []);
 
   const logout = useCallback(async () => {

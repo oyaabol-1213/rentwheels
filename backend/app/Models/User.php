@@ -15,6 +15,13 @@ class User extends Authenticatable
 
     protected $fillable = ['name', 'email', 'password', 'phone', 'profile_image'];
     protected $hidden = ['password'];
+    protected $casts = ['email_verified_at' => 'datetime'];
+
+    /** True once the customer has entered the emailed OTP (existing accounts were backfilled as verified). */
+    public function hasVerifiedEmail(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
 
     // Table has no remember_token column
     public function getRememberTokenName() { return ''; }

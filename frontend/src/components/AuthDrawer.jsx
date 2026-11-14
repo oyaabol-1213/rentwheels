@@ -104,6 +104,14 @@ export default function AuthDrawer() {
       closeDrawer();
       if (user.account_type === "admin") navigate("/admin");
     } catch (err) {
+      // Correct password but the email was never verified: continue on the verification page.
+      if (err?.response?.status === 403 && err.response.data?.requires_verification) {
+        const pendingEmail = err.response.data.email || loginForm.email.trim();
+        setLoginForm({ email: "", password: "" });
+        closeDrawer();
+        navigate("/verify-email", { state: { email: pendingEmail, resendIn: 60 } });
+        return;
+      }
       setError(errorMessage(err, "Login failed."));
     } finally {
       setBusy(false);
@@ -124,14 +132,17 @@ export default function AuthDrawer() {
     setBusy(true);
     setError("");
     try {
-      await signup({
+      const result = await signup({
         name: signupForm.name.trim(),
         email: signupForm.email.trim(),
         password: signupForm.password,
         phone: signupForm.phone.trim(),
       });
+      const pendingEmail = result.email || signupForm.email.trim();
       setSignupForm(EMPTY_SIGNUP);
       closeDrawer();
+      // The account exists but is unverified: the customer enters the emailed code to finish.
+      navigate("/verify-email", { state: { email: pendingEmail, resendIn: result.resend_in ?? 60 } });
     } catch (err) {
       setError(errorMessage(err, "Signup failed."));
     } finally {

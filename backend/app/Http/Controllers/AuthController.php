@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AdminAccount;
 use App\Models\User;
 use App\Notifications\PasswordResetCode;
+use App\Services\EmailOtpService;
 use App\Support\Accounts;
 use Illuminate\Support\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
@@ -13,14 +14,23 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function __construct(private EmailOtpService $otps)
+    {
+    }
+
     // Session restoration and customer/admin authentication endpoints.
     // Restore the account currently authenticated by either session guard.
     public function me()
     {
         $account = Accounts::current();
+        if ($account instanceof User && ! $account->hasVerifiedEmail()) {
+            Auth::guard('web')->logout();
+            $account = null;
+        }
         return response()->json(['user' => $account ? Accounts::payload($account) : null]);
     }
 
@@ -49,6 +59,18 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Incorrect password'], 422);
             }
 
+            // Right password, but the customer never verified their email: no session is created.
+            // A fresh code is sent (best effort; the verify page also has a Resend button).
+            if ($source['guard'] === 'web' && ! $account->hasVerifiedEmail()) {
+                $this->otps->issue($account);
+
+                return response()->json([
+                    'message' => 'Please verify your email first. Enter the 6-digit code we sent you.',
+                    'requires_verification' => true,
+                    'email' => $account->email,
+                ], 403);
+            }
+
             $this->signOutEverywhere();
             Auth::guard($source['guard'])->login($account);
             $request->session()->regenerate();
@@ -59,12 +81,13 @@ class AuthController extends Controller
         return response()->json(['message' => 'Email not found'], 422);
     }
 
-    // Create a customer account and sign the new user in.
+    // Create (or refresh) an UNVERIFIED customer account and email a 6-digit code.
+    // No session is started here: the customer must verify the code first.
     public function signup(Request $request)
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:150'],
-            'email' => ['required', 'email', 'max:191', 'unique:users,email', 'unique:admin_accounts,email'],
+            'email' => ['required', 'email', 'max:191', 'unique:admin_accounts,email'],
             'password' => ['required', 'string', 'min:6'],
             'phone' => ['nullable', 'string', 'max:30'],
         ], [
@@ -72,18 +95,114 @@ class AuthController extends Controller
             'required' => 'Missing fields',
         ]);
 
-        $user = User::create([
-            'name' => trim($data['name']),
-            'email' => trim($data['email']),
-            'password' => Hash::make($data['password']),
-            'phone' => $data['phone'] ?? null,
+        $email = trim($data['email']);
+        $existing = User::whereRaw('LOWER(email) = ?', [strtolower($email)])->first();
+
+        if ($existing && $existing->hasVerifiedEmail()) {
+            throw ValidationException::withMessages(['email' => 'Email already exists']);
+        }
+
+        // An UNVERIFIED account with this email means nobody has proven they own the address yet,
+        // so this sign-up takes it over instead of locking the real owner out of their own email.
+        $user = DB::transaction(function () use ($existing, $data, $email) {
+            $fields = [
+                'name' => trim($data['name']),
+                'password' => Hash::make($data['password']),
+                'phone' => $data['phone'] ?? null,
+            ];
+
+            if ($existing) {
+                $existing->forceFill($fields)->save();
+
+                return $existing;
+            }
+
+            return User::create($fields + ['email' => $email]);
+        });
+
+        $status = $this->otps->issue($user);
+
+        if ($status === EmailOtpService::FAILED) {
+            return response()->json([
+                'message' => "We couldn't send the verification email right now. Please check your email address and try again in a moment.",
+            ], 503);
+        }
+        if ($status === EmailOtpService::LIMITED) {
+            return response()->json(['message' => 'Too many verification emails were requested. Please try again later.'], 429);
+        }
+
+        return response()->json([
+            'message' => 'Account created. Enter the 6-digit code we emailed you to verify your email address.',
+            'requires_verification' => true,
+            'email' => $user->email,
+            'expires_in' => EmailOtpService::TTL_MINUTES * 60,
+            'resend_in' => EmailOtpService::RESEND_COOLDOWN_SECONDS,
+        ], 201);
+    }
+
+    // Check the emailed sign-up code. On success the account becomes verified and the customer is signed in.
+    public function verifyEmailOtp(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'max:191'],
+            'code' => ['required', 'string', 'regex:/^\d{6}$/'],
         ]);
 
-        $this->signOutEverywhere();
-        Auth::guard('web')->login($user);
-        $request->session()->regenerate();
+        $result = $this->otps->verify($data['email'], $data['code']);
 
-        return response()->json(['user' => Accounts::payload($user)], 201);
+        if ($result['status'] === EmailOtpService::VERIFIED && $result['user']) {
+            $this->signOutEverywhere();
+            Auth::guard('web')->login($result['user']);
+            $request->session()->regenerate();
+
+            return response()->json([
+                'message' => 'Email verified. Welcome to RentWheels!',
+                'user' => Accounts::payload($result['user']),
+            ]);
+        }
+
+        return match ($result['status']) {
+            EmailOtpService::EXPIRED => response()->json([
+                'message' => 'This code has expired. Please request a new one.',
+                'code' => 'expired',
+            ], 422),
+            EmailOtpService::LOCKED => response()->json([
+                'message' => 'Too many incorrect attempts. Please request a new code.',
+                'code' => 'locked',
+            ], 429),
+            default => response()->json([
+                'message' => $result['attempts_left'] !== null
+                    ? "That code is incorrect. {$result['attempts_left']} attempt(s) left."
+                    : 'That code is invalid or has expired.',
+                'attempts_left' => $result['attempts_left'],
+            ], 422),
+        };
+    }
+
+    // Send a new sign-up code (the old one stops working). The answer is the same whether or not the
+    // email exists, so this endpoint cannot be used to find out who has an account.
+    public function resendEmailOtp(Request $request)
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email', 'max:191'],
+        ]);
+        $user = User::whereRaw('LOWER(email) = ?', [strtolower(trim($data['email']))])->first();
+
+        if ($user && ! $user->hasVerifiedEmail()) {
+            $status = $this->otps->issue($user);
+
+            if ($status === EmailOtpService::FAILED) {
+                return response()->json(['message' => "We couldn't send the email right now. Please try again in a moment."], 503);
+            }
+            if ($status === EmailOtpService::LIMITED) {
+                return response()->json(['message' => 'Too many codes were requested. Please try again later.'], 429);
+            }
+        }
+
+        return response()->json([
+            'message' => 'If that account is waiting for verification, a new 6-digit code has been sent.',
+            'resend_in' => EmailOtpService::RESEND_COOLDOWN_SECONDS,
+        ]);
     }
 
     // Send a short-lived reset code without revealing whether an email is registered.

@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(255) NOT NULL,
   `phone` varchar(30) DEFAULT NULL,
   `profile_image` varchar(255) DEFAULT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_users_email` (`email`)
@@ -23,6 +24,24 @@ CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Hashed one-time codes used to verify a customer's email address at sign-up.
+CREATE TABLE IF NOT EXISTS `email_otps` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `email` varchar(191) NOT NULL,
+  `purpose` varchar(30) NOT NULL DEFAULT 'registration',
+  `otp_hash` varchar(255) NOT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `attempts` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `verified_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `email_otps_email_purpose_index` (`email`, `purpose`),
+  CONSTRAINT `email_otps_user_id_foreign`
+    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Admin accounts, including the super-admin role.

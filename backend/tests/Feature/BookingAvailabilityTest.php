@@ -29,6 +29,8 @@ class BookingAvailabilityTest extends TestCase
             $table->string('password');
             $table->string('phone')->nullable();
             $table->string('profile_image')->nullable();
+            // Existing tests act as already-verified customers (new sign-ups are what start unverified).
+            $table->timestamp('email_verified_at')->nullable()->useCurrent();
             $table->timestamp('created_at')->nullable();
         });
 
