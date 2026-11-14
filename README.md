@@ -36,28 +36,45 @@ Developed as a final project for **Systems Analysis and Design (BSIT)**.
 
 ## Features
 
-**For Customers**
-- Account registration and login
-- Browse vehicles by category
-- Reserve vehicles with an interactive booking calendar
-- Book tour vans with customizable trip details
-- View and cancel personal bookings
-- Manage profile information
-- Submit customer reviews
-- Booking confirmation before submitting requests
+## Customer features
 
-**For Administrators**
-- Dashboard with system statistics
-- Manage customer booking requests
-- Approve or reject vehicle and tour van reservations
-- Monitor vehicles, users, bookings, and reviews
+- **Create an account and sign in**, with email verification.
+- **Recover a forgotten password** using the password-reset process.
+- **Browse vehicles** by category, view rates and availability, and choose rental dates using the booking calendar.
+- **Request a vehicle rental** with pick-up and return dates, contact details, driver’s license information, pick-up time and location, and optional notes.
+- **Plan a Bicol tour van trip** by choosing a route, date, and guest count. Tour requests can also include pick-up details, emergency contact information, notes, and optional add-ons such as pick-up service or extra stops.
+- **Review a booking request** before submitting it and see the estimated total.
+- **View booking history and status** for vehicle rentals and tours.
+- **Cancel pending bookings** from the customer account.
+- **Manage profile details**, including name, phone number, profile photo, and password.
+- **Read and submit reviews** with a rating from 1 to 5 stars.
+- **Book a tour as a guest**; a customer account is needed to book a vehicle rental, manage bookings, or submit a review.
 
-**For Super Administrators**
-- Add vehicles with photos and details
-- Update vehicle information
-- Manage vehicle availability
-- Delete vehicles
-- Set vehicle status to Available, Limited, or Unavailable
+## Admin features
+
+- **View dashboard statistics** for users, vehicles, vehicle bookings, and tour bookings.
+- **Review booking details** and update vehicle or tour booking statuses: Pending, Confirmed, Cancelled, or Completed.
+- **See customer and booking information**, including dates, contact details, route or vehicle, pick-up details, add-ons, totals, and notes.
+- **View customer accounts and submitted reviews.**
+- **View fleet information and vehicle availability.**
+
+## Super Admin features
+
+A Super Admin has the admin features above, plus the ability to:
+
+- **Create admin accounts.**
+- **Add vehicles** with details, rates, categories, status, and an optional photo.
+- **Set vehicle availability** to Available, Limited, or Unavailable.
+- **Remove vehicles** from the fleet.
+
+## Booking statuses
+
+- **Pending:** Awaiting administrator review.
+- **Confirmed:** Approved.
+- **Cancelled:** Cancelled by the customer while pending, or by an administrator.
+- **Completed:** The rental or tour has finished.
+
+**Please note:** Submitting a booking sends a request for approval; it does not automatically confirm the booking. RentWheels currently supports booking requests and management, not online payment processing.
 
 ---
 
